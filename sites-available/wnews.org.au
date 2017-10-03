@@ -55,15 +55,20 @@ server {
 		return 301 https://s3-ap-southeast-2.amazonaws.com/wp-media-lib/$1;
 	}
 
+	location ~ /system/.* {
+		return 403;
+	}
+
 	location / {
 		rewrite /(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife)/(?!list/)(.*)	/$1/list/$2	break;
-        	proxy_pass http://208.113.164.18;
+		# host configured in /etc/hosts
+        proxy_pass http://wnews-sling-host;
 		proxy_set_header Host       $host;
 		proxy_cache            STATIC;
-                    proxy_cache_valid      200  1d;
-                    proxy_cache_use_stale  error timeout invalid_header updating
-                                           http_500 http_502 http_503 http_504;
-    	}
+        proxy_cache_valid      200  1d;
+        proxy_cache_use_stale  error timeout invalid_header updating http_500 http_502 http_503 http_504;
+        proxy_cache_bypass $cookie_nocache $arg_nocache;
+    }
 
     listen 443 ssl; # managed by Certbot
 ssl_certificate /etc/letsencrypt/live/wnews.org.au/fullchain.pem; # managed by Certbot
