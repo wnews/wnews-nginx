@@ -4,7 +4,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name www.wnews.org.au wnews.org.au;
+    server_name www.wnews.org.au beta.wnews.org.au wnews.org.au;
 
 ### START FORCE HTTPS
 
@@ -51,8 +51,47 @@ server {
 #               try_files $uri $uri/ =404;
 #       }
 
+        error_page 404 /404.html;
+
+        location = /404.html {
+            root /var/www/html/error/;
+            internal;
+        }
+
+        location /images/railway-bridge.jpeg {
+            root /var/www/;
+        }
+
+        location ~ /(BingSiteAuth.xml|google3c16f371b7d30131.html) {
+            root /var/www/html/;
+        }
+
+	location ~ /about-us.* {
+		return 301 /about.html;
+	}
+
+	location ~ /regular-advertisers.* {
+		return 301 /advertisements.html;
+	}
+
+	location ~ /advertising.* {
+		return 301 https://www.wnews.org.au/contact.html#advertising;
+	}
+
+	location ~ /(tag/front-page|category/past-issues).* {
+		return 301 https://www.wnews.org.au/past-issues.html;
+	}
+
+	location = /advertisements/list/criterion-hotel-accommodation.html {
+		return 301 /advertisements/list/criterion-hotel.html;
+	}
+
 	location ~ /wp/media/s3./(.*) {
-		return 301 https://s3-ap-southeast-2.amazonaws.com/wp-media-lib/$1;
+		return 302 https://s3-ap-southeast-2.amazonaws.com/wp-media-lib/$1;
+	}
+
+	location ~ /(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife|trades-and-services)(.*)/$ {
+		return 302 /$1$2.html;
 	}
 
 	location ~ /system/.* {
@@ -68,6 +107,7 @@ server {
         proxy_cache_valid      200  1d;
         proxy_cache_use_stale  error timeout invalid_header updating http_500 http_502 http_503 http_504;
         proxy_cache_bypass $cookie_nocache $arg_nocache;
+        proxy_intercept_errors on;
     }
 
     listen 443 ssl; # managed by Certbot
