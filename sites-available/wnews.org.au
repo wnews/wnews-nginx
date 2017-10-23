@@ -90,7 +90,7 @@ server {
 		return 302 https://s3-ap-southeast-2.amazonaws.com/wp-media-lib/$1;
 	}
 
-	location ~ /(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife|trades-and-services)(.*)/$ {
+	location ~ /(articles|gardening|home-hints|past-issues|recipes|related-sites|wildlife|trades-and-services|accommodation|about)(.*)/$ {
 		return 302 /$1$2.html;
 	}
 
